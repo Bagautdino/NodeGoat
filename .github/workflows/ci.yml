@@ -47,7 +47,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.repository }}:${{ steps.image_tag.outputs.tag }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ toLower(github.repository) }}:${{ steps.image_tag.outputs.tag }}
+
+
 
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3.6.0
@@ -58,7 +60,8 @@ jobs:
         env:
           COSIGN_EXPERIMENTAL: 'true'
         run: |
-          cosign sign --yes ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.repository }}@${{ steps.build_and_push.outputs.digest }}
+          cosign sign --yes ${{ secrets.DOCKERHUB_USERNAME }}/${{ toLower(github.repository) }}@${{ steps.build_and_push.outputs.digest }}
+
 
       - name: Log out from Docker Hub
         run: docker logout
